@@ -1,0 +1,43 @@
+define dso_local i32 @main() local_unnamed_addr #3 {
+  %1 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* nonnull dereferenceable(272) @_ZSt4cout, i8* nonnull getelementptr inbounds ([14 x i8], [14 x i8]* @.str, i64 0, i64 0), i64 13)
+  %2 = load i8*, i8** bitcast (%"class.std::basic_ostream"* @_ZSt4cout to i8**), align 8, !tbaa !2
+  %3 = getelementptr i8, i8* %2, i64 -24
+  %4 = bitcast i8* %3 to i64*
+  %5 = load i64, i64* %4, align 8
+  %6 = getelementptr inbounds i8, i8* bitcast (%"class.std::basic_ostream"* @_ZSt4cout to i8*), i64 %5
+  %7 = getelementptr inbounds i8, i8* %6, i64 240
+  %8 = bitcast i8* %7 to %"class.std::ctype"**
+  %9 = load %"class.std::ctype"*, %"class.std::ctype"** %8, align 8, !tbaa !5
+  %10 = icmp eq %"class.std::ctype"* %9, null
+  br i1 %10, label %11, label %12
+
+
+  tail call void @_ZSt16__throw_bad_castv() #6
+  unreachable
+
+
+  %13 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %9, i64 0, i32 8
+  %14 = load i8, i8* %13, align 8, !tbaa !10
+  %15 = icmp eq i8 %14, 0
+  br i1 %15, label %19, label %16
+
+
+  %17 = getelementptr inbounds %"class.std::ctype", %"class.std::ctype"* %9, i64 0, i32 9, i64 10
+  %18 = load i8, i8* %17, align 1, !tbaa !12
+  br label %25
+
+
+  tail call void @_ZNKSt5ctypeIcE13_M_widen_initEv(%"class.std::ctype"* nonnull %9)
+  %20 = bitcast %"class.std::ctype"* %9 to i8 (%"class.std::ctype"*, i8)***
+  %21 = load i8 (%"class.std::ctype"*, i8)**, i8 (%"class.std::ctype"*, i8)*** %20, align 8, !tbaa !2
+  %22 = getelementptr inbounds i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %21, i64 6
+  %23 = load i8 (%"class.std::ctype"*, i8)*, i8 (%"class.std::ctype"*, i8)** %22, align 8
+  %24 = tail call signext i8 %23(%"class.std::ctype"* nonnull %9, i8 signext 10)
+  br label %25
+
+
+  %26 = phi i8 [ %18, %16 ], [ %24, %19 ]
+  %27 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo3putEc(%"class.std::basic_ostream"* nonnull @_ZSt4cout, i8 signext %26)
+  %28 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZNSo5flushEv(%"class.std::basic_ostream"* nonnull %27)
+  ret i32 0
+}
