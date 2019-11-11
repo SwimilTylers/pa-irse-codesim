@@ -7,7 +7,7 @@ import (
 )
 
 func TestWinnowFeature(t *testing.T) {
-	a := NewFeature("test0")
+	a := NewWinnowFeature("test0")
 	a.AddFingerprint(&fingerprint.Fingerprint{
 		Hash:  100,
 		Where: 8,
@@ -17,7 +17,7 @@ func TestWinnowFeature(t *testing.T) {
 		Where: 4,
 	})
 
-	b := NewFeature("test1")
+	b := NewWinnowFeature("test1")
 	b.AddFingerprint(&fingerprint.Fingerprint{
 		Hash:  100,
 		Where: 8,

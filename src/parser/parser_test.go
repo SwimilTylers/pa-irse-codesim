@@ -13,7 +13,7 @@ func ExampleFeatureSelector_SelectFeatures() {
 	oname := "text11.ll"
 
 	observs := preprocess.GetFromFile(fileBase+oname, preprocess.GetPreprocessFunc("func-squeeze"), false)
-	feature := feature2.NewFeature(oname)
+	feature := feature2.NewWinnowFeature(oname)
 
 	for _, value := range observs {
 		p.SelectFeatures(value, feature)

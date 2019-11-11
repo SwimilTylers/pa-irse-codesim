@@ -11,6 +11,7 @@ type FPFeature interface {
 
 type FlexibleFeature interface {
 	AddFingerprint(fingerprint *fingerprint.Fingerprint)
+	AddDimension()
 }
 
 type MeasurableFeature interface {

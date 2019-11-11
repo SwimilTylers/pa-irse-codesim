@@ -10,7 +10,7 @@ type WinnowFeature struct {
 	set       mapset.Set
 }
 
-func NewFeature(belongsTo string) *WinnowFeature {
+func NewWinnowFeature(belongsTo string) *WinnowFeature {
 	s := &WinnowFeature{
 		belongsTo: belongsTo,
 		set:       mapset.NewSet(),
@@ -20,6 +20,10 @@ func NewFeature(belongsTo string) *WinnowFeature {
 
 func (fp *WinnowFeature) AddFingerprint(fingerprint *fingerprint.Fingerprint) {
 	fp.set.Add(fingerprint.ToString())
+}
+
+func (fp *WinnowFeature) AddDimension() {
+	// nullify it, meaningless to this feature
 }
 
 func (fp *WinnowFeature) Covariance(other MeasurableFeature) float64 {
