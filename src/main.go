@@ -37,6 +37,10 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	if len(files) < 2 {
+		log.Fatalln("At least two files")
+	}
+
 	if !checkFileExistence(files) {
 		log.Fatalln("File not found!")
 	}
