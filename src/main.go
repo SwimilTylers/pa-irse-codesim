@@ -8,19 +8,18 @@ import (
 	"measurement"
 	"os"
 	"parser"
-	"path/filepath"
 	"preprocess"
 	"syscmd"
 	"time"
 )
 
 var verbose = flag.Bool("v", false, "Show progress.")
-var k = flag.Int("k", 5, "Kgrams Parameter. Default to 5.")
+var k = flag.Int("k", 5, "Kgrams Parameter.")
 var w = flag.Int("w", 4, "Winnow size. Default to 4.")
-var hashBase = flag.Uint("b", 3, "Base of Karp-Rabin String Matching. Default to 3.")
-var featureType = flag.String("ft", "winnow", "Feature Type. Default to winnow.")
-var preprocessMode = flag.String("ppm", "func-squeeze", "Choose text preprocess mode. Default to func-squeeze.")
-var measurementMode = flag.String("mm", "str8", "Choose similarity measurement. Default to str8.")
+var hashBase = flag.Uint("b", 3, "Base of Karp-Rabin String Matching.")
+var featureType = flag.String("ft", "winnow", "Feature Type. Your choice can be \"winnow\" or \"multi-winnow\".")
+var preprocessMode = flag.String("ppm", "func-squeeze", "Choose text preprocess mode. Your choice can be \"func-raw\", \"func-no-comment\" or \"func-squeeze\".")
+var measurementMode = flag.String("smm", "str8", "Choose similarity measurement. Your choice can be \"str8\".")
 
 func progress(v ...interface{}) {
 	if *verbose {
@@ -29,6 +28,7 @@ func progress(v ...interface{}) {
 }
 
 func main() {
+	flag.Usage = CustomizedUsage
 	flag.Parse()
 
 	files, err := pathChange(flag.Args())
@@ -58,9 +58,11 @@ func main() {
 
 	midTs := time.Now()
 
+	var similarity float64
+
 	switch *measurementMode {
 	case "str8":
-		fmt.Println(measurement.Straightforward(features))
+		similarity = measurement.Straightforward(features)
 		break
 	default:
 		log.Fatalln("Unknown measurement:", *measurementMode)
@@ -69,6 +71,13 @@ func main() {
 	endTs := time.Now()
 
 	progress("Extract takes", midTs.Sub(startTs), "\tComparison takes", endTs.Sub(midTs))
+
+	fmt.Println(similarity)
+}
+
+func CustomizedUsage() {
+	fmt.Fprintf(flag.CommandLine.Output(), "Usage: codesim [options] code1 code2.\nOptions can be:\n")
+	flag.PrintDefaults()
 }
 
 func pathChange(paths []string) ([]string, error) {
@@ -76,11 +85,7 @@ func pathChange(paths []string) ([]string, error) {
 	var err error
 
 	for i, p := range paths {
-		if !filepath.IsAbs(p) {
-			ret[i], err = filepath.Abs(p)
-		} else {
-			ret[i] = p
-		}
+		ret[i] = syscmd.GetAbs(p)
 	}
 
 	return ret, err
