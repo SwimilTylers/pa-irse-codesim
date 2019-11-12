@@ -4,12 +4,13 @@ import (
 	"feature"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"measurement"
-	"os/exec"
+	"os"
 	"parser"
+	"path/filepath"
 	"preprocess"
+	"syscmd"
 	"time"
 )
 
@@ -17,13 +18,9 @@ var verbose = flag.Bool("v", false, "Show progress.")
 var k = flag.Int("k", 5, "Kgrams Parameter. Default to 5.")
 var w = flag.Int("w", 4, "Winnow size. Default to 4.")
 var hashBase = flag.Uint("b", 3, "Base of Karp-Rabin String Matching. Default to 3.")
-var featureType = flag.String("-ft", "winnow", "Feature Type. Default to winnow.")
-var preprocessMode = flag.String("-ppm", "func-squeeze", "Choose text preprocess mode. Default to func-squeeze.")
-var measurementMode = flag.String("-mm", "str8", "Choose similarity measurement. Default to str8.")
-var files = []string{
-	"/home/swimiltylers/demo1.cpp",
-	"/home/swimiltylers/demo2.cpp",
-}
+var featureType = flag.String("ft", "winnow", "Feature Type. Default to winnow.")
+var preprocessMode = flag.String("ppm", "func-squeeze", "Choose text preprocess mode. Default to func-squeeze.")
+var measurementMode = flag.String("mm", "str8", "Choose similarity measurement. Default to str8.")
 
 func progress(v ...interface{}) {
 	if *verbose {
@@ -34,6 +31,18 @@ func progress(v ...interface{}) {
 func main() {
 	flag.Parse()
 
+	files, err := pathChange(flag.Args())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if !checkFileExistence(files) {
+		log.Fatalln("File not found!")
+	}
+
+	progress("Code Comparison between", files)
+
 	startTs := time.Now()
 
 	fpParser := parser.NewParser(*k, *w, *hashBase)
@@ -41,7 +50,7 @@ func main() {
 
 	prep := preprocess.GetPreprocessFunc(*preprocessMode)
 
-	features := extractFeatures(fpParser, prep)
+	features := extractFeatures(files, fpParser, prep)
 
 	midTs := time.Now()
 
@@ -58,12 +67,54 @@ func main() {
 	progress("Extract takes", midTs.Sub(startTs), "\tComparison takes", endTs.Sub(midTs))
 }
 
-func extractFeatures(fpParser *parser.FeatureSelector, prep func([]byte) [][]byte) []feature.MeasurableFeature {
+func pathChange(paths []string) ([]string, error) {
+	ret := make([]string, len(paths))
+	var err error
+
+	for i, p := range paths {
+		if !filepath.IsAbs(p) {
+			ret[i], err = filepath.Abs(p)
+		} else {
+			ret[i] = p
+		}
+	}
+
+	return ret, err
+}
+
+func fileExistence(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+func checkFileExistence(files []string) bool {
+	isExist := true
+	for _, f := range files {
+		ex, _ := fileExistence(f)
+		isExist = isExist && ex
+	}
+	return isExist
+}
+
+func extractFeatures(files []string, fpParser *parser.FeatureSelector, prep func([]byte) [][]byte) []feature.MeasurableFeature {
 	features := make([]feature.MeasurableFeature, len(files))
 
 	for i, fname := range files {
 		startTs := time.Now()
-		text := dump(fname)
+
+		progress("Dump file:", fname)
+		text := syscmd.Dump(fname)
+
+		if len(text) == 0 {
+			log.Fatalln("Dump Error")
+		}
+
 		progress("Dump takes", time.Now().Sub(startTs))
 
 		var fp feature.FlexibleFeature
@@ -73,6 +124,9 @@ func extractFeatures(fpParser *parser.FeatureSelector, prep func([]byte) [][]byt
 		switch *featureType {
 		case "winnow":
 			fp = feature.NewWinnowFeature(fname)
+			break
+		case "multi-winnow":
+			fp = feature.NewMultiWinnowFeature(fname)
 			break
 		default:
 			log.Fatalln("Unknown feature type", *featureType)
@@ -91,31 +145,4 @@ func extractFeatures(fpParser *parser.FeatureSelector, prep func([]byte) [][]byt
 	}
 
 	return features
-}
-
-func dump(from string) []byte {
-	progress("dump", from)
-
-	r := exec.Command("/bin/bash", "-c", fmt.Sprintf("/bin/bash llvm-dump.sh %s", from))
-	f, err := r.StdoutPipe()
-	if err != nil {
-		log.Fatalln("Cannot get stdout:", err)
-	}
-
-	var bs []byte
-
-	if err = r.Start(); err == nil {
-		bs, err = ioutil.ReadAll(f)
-		if err != nil {
-			log.Fatalln("Dump Read Error:", err)
-		}
-	} else {
-		log.Fatalln("Dump Start Error:", err)
-	}
-
-	if err = r.Wait(); err != nil {
-		log.Fatalln("Dump Wait Error:", err)
-	}
-
-	return bs
 }

@@ -30,6 +30,7 @@ func (mwf *MultiWinnowFeature) AddDimension() {
 		mwf.winnows = newWs
 	}
 	mwf.winnows = mwf.winnows[:mwf.top+1]
+	mwf.winnows[mwf.top] = NewWinnowFeature(mwf.belongsTo + "-" + string(mwf.top))
 }
 
 func (mwf *MultiWinnowFeature) Covariance(other MeasurableFeature) float64 {
