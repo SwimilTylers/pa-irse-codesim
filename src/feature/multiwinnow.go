@@ -71,9 +71,9 @@ func (mwf *MultiWinnowFeature) Covariance(other MeasurableFeature) float64 {
 func (mwf *MultiWinnowFeature) Similarity(basedOn MeasurableFeature) float64 {
 	sim := 0.0
 
-	switch other.(type) {
+	switch basedOn.(type) {
 	case *MultiWinnowFeature:
-		otherf := other.(*MultiWinnowFeature)
+		otherf := basedOn.(*MultiWinnowFeature)
 		mostMatch := make([]float64, len(mwf.winnows))
 		mostMatchIdx := make([]int, len(mostMatch))
 		for dim, tensor := range mwf.winnows {

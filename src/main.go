@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"parser"
 	"preprocess"
+	"time"
 )
 
 var verbose = flag.Bool("v", false, "Show progress.")
@@ -33,12 +34,16 @@ func progress(v ...interface{}) {
 func main() {
 	flag.Parse()
 
+	startTs := time.Now()
+
 	fpParser := parser.NewParser(*k, *w, *hashBase)
 	fpParser.Verbose = *verbose
 
 	prep := preprocess.GetPreprocessFunc(*preprocessMode)
 
 	features := extractFeatures(fpParser, prep)
+
+	midTs := time.Now()
 
 	switch *measurementMode {
 	case "str8":
@@ -47,13 +52,20 @@ func main() {
 	default:
 		log.Fatalln("Unknown measurement:", *measurementMode)
 	}
+
+	endTs := time.Now()
+
+	progress("Extract takes", midTs.Sub(startTs), "\tComparison takes", endTs.Sub(midTs))
 }
 
 func extractFeatures(fpParser *parser.FeatureSelector, prep func([]byte) [][]byte) []feature.MeasurableFeature {
 	features := make([]feature.MeasurableFeature, len(files))
 
 	for i, fname := range files {
+		startTs := time.Now()
 		text := dump(fname)
+		progress("Dump takes", time.Now().Sub(startTs))
+
 		var fp feature.FlexibleFeature
 
 		progress("Select", *featureType, "Feature for", fname, ", preprocessed by", *preprocessMode)
@@ -66,10 +78,14 @@ func extractFeatures(fpParser *parser.FeatureSelector, prep func([]byte) [][]byt
 			log.Fatalln("Unknown feature type", *featureType)
 		}
 
+		startTs = time.Now()
+
 		for _, st := range prep(text) {
 			fp.AddDimension()
 			fpParser.SelectFeatures(st, fp)
 		}
+
+		progress("Winnow Takes", time.Now().Sub(startTs))
 
 		features[i] = fp.(feature.MeasurableFeature)
 	}
