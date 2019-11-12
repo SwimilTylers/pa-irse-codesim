@@ -1,8 +1,6 @@
 package syscmd
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -16,35 +14,18 @@ func GetAbs(rel string) string {
 	return rel
 }
 
-func RunBash(bash string, variable string) []byte {
-	bash = GetAbs(bash)
-
-	v := fmt.Sprintf("%s %s", bash, variable)
-
-	return RunSysCmd("/bin/bash", v)
+func RunBashCmd(bashCmd string) []byte {
+	out, err := exec.Command("bash", "-c", bashCmd).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return out
 }
 
-func RunSysCmd(syscmd string, variables string) []byte {
-	r := exec.Command("/bin/bash", "-c", fmt.Sprintf("%s %s", syscmd, variables))
-	f, err := r.StdoutPipe()
+func RunSysCmd(sysCmd string) []byte {
+	out, err := exec.Command(sysCmd).Output()
 	if err != nil {
-		log.Fatalln("Cannot get stdout:", err)
+		log.Fatal(err)
 	}
-
-	var bs []byte
-
-	if err = r.Start(); err == nil {
-		bs, err = ioutil.ReadAll(f)
-		if err != nil {
-			log.Fatalln("RunSysCmd Read Error:", err)
-		}
-	} else {
-		log.Fatalln("RunSysCmd Start Error:", err)
-	}
-
-	if err = r.Wait(); err != nil {
-		log.Fatalln("RunSysCmd Wait Error:", err)
-	}
-
-	return bs
+	return out
 }

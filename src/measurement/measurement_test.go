@@ -36,7 +36,7 @@ func fetchTexts(folder string) [][]byte {
 			bs = bs[:l+1]
 		}
 
-		bs[l] = syscmd.Dump(path)
+		bs[l] = syscmd.ClangDump(path)
 
 		return nil
 	}); err != nil {
@@ -62,7 +62,7 @@ func extractFeature(bs [][]byte, fpParser *parser.FeatureSelector, prep func([]b
 	return ret
 }
 
-func BenchmarkStraightforward(b *testing.B) {
+func TestStraightforward(t *testing.T) {
 	fp := parser.NewParser(5, 4, 3)
 
 	features := extractFeature(fetchTexts("comparison_0"), fp, preprocess.GetPreprocessFunc("func-squeeze"), func() feature.FlexibleFeature {
@@ -71,9 +71,5 @@ func BenchmarkStraightforward(b *testing.B) {
 		return flexibleFeature.(feature.MeasurableFeature)
 	})
 
-	b.Log(features)
-}
-
-func TestStraightforward(t *testing.T) {
-
+	t.Log(features)
 }

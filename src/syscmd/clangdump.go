@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 )
 
+// deprecated
 func Dump(from string) []byte {
 	if !filepath.IsAbs(from) {
 		from, _ = filepath.Abs(from)
@@ -35,4 +36,13 @@ func Dump(from string) []byte {
 	}
 
 	return bs
+}
+
+func ClangDump(from string) []byte {
+	tmpFile := string(RunBashCmd("mktemp -t"))
+	RunBashCmd(fmt.Sprintf("clang -O3 -emit-llvm -S %s -o %s", from, tmpFile))
+	ret := RunBashCmd(fmt.Sprintf("cat %s", tmpFile))
+	RunBashCmd(fmt.Sprintf("rm %s", tmpFile))
+
+	return ret
 }

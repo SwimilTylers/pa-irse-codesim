@@ -113,7 +113,7 @@ func extractFeatures(files []string, fpParser *parser.FeatureSelector, prep func
 		startTs := time.Now()
 
 		progress("Dump file:", fname)
-		text := syscmd.Dump(fname)
+		text := syscmd.ClangDump(fname)
 
 		if len(text) == 0 {
 			log.Fatalln("Dump Error")
