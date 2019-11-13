@@ -40,7 +40,7 @@ func Dump(from string) []byte {
 
 func ClangDump(from string) []byte {
 	tmpFile := string(RunBashCmd("mktemp -t"))
-	RunBashCmd(fmt.Sprintf("clang -O3 -emit-llvm -S %s -o %s", from, tmpFile))
+	RunBashCmd(fmt.Sprintf("clang -O1 -emit-llvm -S %s -o %s", from, tmpFile))
 	ret := RunBashCmd(fmt.Sprintf("cat %s", tmpFile))
 	RunBashCmd(fmt.Sprintf("rm %s", tmpFile))
 

@@ -27,7 +27,7 @@ func TestWinnowFeature(t *testing.T) {
 		Where: 4,
 	})
 
-	cov, sim := a.Covariance(b), a.Similarity(b)
+	cov, sim := a.jaccard(b), a.overlap(b)
 	if math.Abs(cov-1.0/3) >= 1e-5 {
 		t.Error("Expected cov=1/3, get", sim)
 	}

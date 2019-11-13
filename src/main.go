@@ -17,9 +17,10 @@ var verbose = flag.Bool("v", false, "Show progress.")
 var k = flag.Int("k", 5, "Kgrams Parameter.")
 var w = flag.Int("w", 4, "Winnow size. Default to 4.")
 var hashBase = flag.Uint("b", 3, "Base of Karp-Rabin String Matching.")
-var featureType = flag.String("ft", "winnow", "Feature Type. Your choice can be \"winnow\" or \"multi-winnow\".")
-var preprocessMode = flag.String("ppm", "func-squeeze", "Choose text preprocess mode. Your choice can be \"func-raw\", \"func-no-comment\" or \"func-squeeze\".")
-var measurementMode = flag.String("smm", "str8", "Choose similarity measurement. Your choice can be \"str8\".")
+var featureType = flag.String("ft", "multi-winnow", "Feature Type. Your choice can be \"winnow\" or \"multi-winnow\".")
+var preprocessMode = flag.String("pm", "func-squeeze", "Choose text preprocess mode. Your choice can be \"func-raw\", \"func-no-comment\" or \"func-squeeze\".")
+var similarityMode = flag.String("sm", "overlap", "Choose similarity. Your choice can be \"smc\", \"overlap\" or \"jaccard\".")
+var measurementMode = flag.String("mm", "max", "Choose measurement. Your choice can be \"max\" or \"mean\".")
 
 func progress(v ...interface{}) {
 	if *verbose {
@@ -58,15 +59,7 @@ func main() {
 
 	midTs := time.Now()
 
-	var similarity float64
-
-	switch *measurementMode {
-	case "str8":
-		similarity = measurement.Straightforward(features)
-		break
-	default:
-		log.Fatalln("Unknown measurement:", *measurementMode)
-	}
+	var similarity float64 = measurement.MeasureTwoFeatures(features, *measurementMode, *similarityMode)
 
 	endTs := time.Now()
 

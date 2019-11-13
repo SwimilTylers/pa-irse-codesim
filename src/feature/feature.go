@@ -15,6 +15,5 @@ type FlexibleFeature interface {
 }
 
 type MeasurableFeature interface {
-	Covariance(other MeasurableFeature) float64
-	Similarity(basedOn MeasurableFeature) float64
+	GetSimilarity(other MeasurableFeature, simMode string) float64
 }
