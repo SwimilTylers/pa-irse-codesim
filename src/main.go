@@ -19,7 +19,7 @@ var w = flag.Int("w", 4, "Winnow size. Default to 4.")
 var hashBase = flag.Uint("b", 3, "Base of Karp-Rabin String Matching.")
 var featureType = flag.String("ft", "multi-winnow", "Feature Type. Your choice can be \"winnow\" or \"multi-winnow\".")
 var preprocessMode = flag.String("pm", "func-squeeze", "Choose text preprocess mode. Your choice can be \"func-raw\", \"func-no-comment\" or \"func-squeeze\".")
-var similarityMode = flag.String("sm", "overlap", "Choose similarity. Your choice can be \"smc\", \"overlap\" or \"jaccard\".")
+var similarityMode = flag.String("sm", "jaccard", "Choose similarity. Your choice can be \"smc\", \"overlap\" or \"jaccard\".")
 var measurementMode = flag.String("mm", "max", "Choose measurement. Your choice can be \"max\" or \"mean\".")
 
 func progress(v ...interface{}) {
