@@ -1,12 +1,14 @@
 # pa-irse-codesim: Code similarity detector
 > MG1933080 Yi-Jiang Yang
 
+Github Repo: https://github.com/SwimilTylers/pa-irse-codesim
+
 This is an project assignment for NJUCS Introduction of Software Engineering Research (2019). 
 Our goal is an implementation of code similarity detector. This a **Go** project. You can use Go tools for
 compilation and unit test.
 
 Our major technique is K-grams and Winnowing. We employs external github repo [golang-set](github.com/deckarep/golang-set).
-Hence, you have to manually download their source code into `src` directory, or you can use IDE like Jetbrains Goland for
+Hence, you can use `go get github.com/deckarep/golang-set`, or you can use IDE like Jetbrains Goland for
 automatic configuration (see `src/feature/winnow.go`, follow Goland's hint and begin downloading).
 
 ## Usages & Options
@@ -36,7 +38,7 @@ Options can be:
 ## Compilation & Run
 
 We use Go 1.12 to build our project. Before compilation, you MUST deal with external github repo [golang-set](github.com/deckarep/golang-set).
-We recommend you to use IDE to automatic configuration. To compile, please follow these steps:
+You need type `go get github.com/deckarep/golang-set`. Otherwise, if you use Jetbrains Goland, please follow these steps:
 
 1. open `src/feature/winnow.go` in Jetbrains Goland
 
