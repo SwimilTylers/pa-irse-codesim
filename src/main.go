@@ -65,7 +65,7 @@ func main() {
 
 	progress("Extract takes", midTs.Sub(startTs), "\tComparison takes", endTs.Sub(midTs))
 
-	fmt.Println(similarity)
+	fmt.Printf("%.1f\n", similarity*100)
 }
 
 func CustomizedUsage() {
